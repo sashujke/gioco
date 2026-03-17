@@ -23,7 +23,7 @@
     </canvas>
 
     <script>
-        const playgorund = document.getElementById('playground');
+        const playground = document.getElementById('playground');
         const ctx = playground.getContext("2d");
 
         let W = 0, H = 0; // larghezza ed altezza del canvas
@@ -37,12 +37,40 @@
         window.addEventListener('resize', resize);
 
         let me = {
+            id: null,
             x: W/2,
             y: H/2,
             speed: 5,
             fill: randomFill(),
         };
-        let others = []; // TODO riempire con i dati che arrivano dal server
+        let others = [];
+
+        const personW = 40;
+        const personH = 70;
+
+        const socket = new WebSocket(`ws://${window.location.hostname || "127.0.0.1"}:4242`);
+        socket.addEventListener("message", (event) => {
+            const message = JSON.parse(event.data);
+
+            if (message.type === "me") {
+                me.id = message.id;
+            }
+
+            if (message.type === "players") {
+                const players = message.players || [];
+                const meFromServer = players.find((p) => p.id === me.id);
+
+                if (meFromServer) {
+                    me = {
+                        ...me,
+                        ...meFromServer,
+                        speed: 5
+                    };
+                }
+
+                others = players.filter((p) => p.id !== me.id);
+            }
+        });
 
         function draw() {
             // gestione movimento
@@ -50,6 +78,17 @@
             if (goingLeft) me.x -= me.speed;
             if (goingDown) me.y += me.speed;
             if (goingRight) me.x += me.speed;
+
+            me.x = Math.max(personW/2, Math.min(W - personW/2, me.x));
+            me.y = Math.max(personH/2, Math.min(H - personH/2, me.y));
+
+            if (socket.readyState === WebSocket.OPEN && me.id) {
+                socket.send(JSON.stringify({
+                    type: "move",
+                    x: me.x,
+                    y: me.y
+                }));
+            }
 
             // pulisci lo sfondo
             ctx.beginPath();
@@ -65,8 +104,6 @@
         requestAnimationFrame(draw);
 
 
-        const personW = 40;
-        const personH = 70;
         function drawPerson(person) {
             ctx.beginPath();
             ctx.rect(
@@ -74,14 +111,9 @@
                 person.y - personH/2,
                 personW, personH
             );
-            ctx.fillStyle = me.fill;
+            ctx.fillStyle = person.fill;
             ctx.fill();
         }
-
-        const socket = new WebSocket(`ws://localhost:4242`);
-        socket.addEventListener("message", async event => {
-            // TODO aggiornare lo stato in base ai messaggi del server
-        });
 
         // TODO spostare la gestione dei movimenti sul server
         let goingUp = false;
