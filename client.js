@@ -15,7 +15,7 @@ let me = {
     x: W/2,
     y: H/2,
     speed: 5,
-    character: 'normalGuy'
+    character: 'Persona12'
 };
 let others = []; // TODO riempire con i dati che arrivano dal server
 
@@ -73,6 +73,7 @@ document.addEventListener("keyup", (event) => {
 
 const characters = {
     normalGuy: drawNormalGuy,
+    Persona12: drawMarabunta,
 }
 
 function drawNormalGuy(x, y, w, h, style = {}) {
@@ -131,6 +132,131 @@ function drawNormalGuy(x, y, w, h, style = {}) {
     ctx.stroke();
     /*
     */
+    // -bounding box
+
+    ctx.restore();
+}
+
+function drawMarabunta(x, y, w, h, style = {}) {
+    ctx.save();
+
+    // move origin (x=0, y=0) to the person center
+    ctx.translate(x, y);
+    const startX = -w/2;
+    const startY = -h/2;
+
+    // +head (carnagione scura)
+    const headH = h * 0.3;
+
+    ctx.beginPath();
+    ctx.fillStyle = style.skinColor || "#5c4033";
+    ctx.rect(startX, startY, w, headH);
+    ctx.fill();
+
+    // +capelli/bandana verde (Marabunta style)
+    ctx.beginPath();
+    ctx.fillStyle = "#228B22";
+    ctx.rect(startX, startY, w, headH * 0.4);
+    ctx.fill();
+
+    // +occhi (scuri, visibili)
+    ctx.fillStyle = "#1a1a1a";
+    ctx.rect(startX + w * 0.15, startY + headH * 0.25, w * 0.18, headH * 0.2);
+    ctx.rect(startX + w * 0.67, startY + headH * 0.25, w * 0.18, headH * 0.2);
+    ctx.fill();
+
+    // +baffi/barba nera (stile gang)
+    ctx.fillStyle = "#0d0d0d";
+    ctx.rect(startX + w * 0.2, startY + headH * 0.65, w * 0.6, headH * 0.15);
+    ctx.fill();
+    // -head
+
+    // +body - Maglia GUCCI (rosso e oro)
+    const bodyStartY = startY + headH;
+    const bodyH = h * 0.35;
+    const armLen = 0.4 * w;
+
+    // +braccia PRIMA (pelle - visibili bene)
+    ctx.beginPath();
+    ctx.fillStyle = "#5c4033";
+    ctx.rect(startX - armLen, bodyStartY, armLen, 0.4*bodyH); // left arm
+    ctx.rect(startX + w, bodyStartY, armLen, 0.4*bodyH); // right arm
+    ctx.fill();
+
+    // maglia GUCCI rossa - corpo principale
+    ctx.beginPath();
+    ctx.fillStyle = "#cc0000";
+    ctx.rect(startX, bodyStartY, w, bodyH); // corpo principale
+    ctx.fill();
+
+    // +colletto GUCCI (fascia oro/verde)
+    ctx.fillStyle = "#FFD700";
+    ctx.rect(startX + w * 0.2, bodyStartY, w * 0.6, bodyH * 0.08);
+    ctx.fill();
+
+    // +stripe oro TOP (prominente)
+    ctx.fillStyle = "#FFD700";
+    ctx.rect(startX + w * 0.05, bodyStartY + bodyH * 0.12, w * 0.9, bodyH * 0.1);
+    ctx.fill();
+
+    // +stripes verdi GUCCI (laterali - prominenti)
+    ctx.fillStyle = "#228B22";
+    ctx.rect(startX + w * 0.08, bodyStartY + bodyH * 0.08, w * 0.08, bodyH * 0.25);
+    ctx.rect(startX + w * 0.84, bodyStartY + bodyH * 0.08, w * 0.08, bodyH * 0.25);
+    ctx.fill();
+
+    // +tasche GUCCI (oro)
+    ctx.fillStyle = "#FFD700";
+    ctx.rect(startX + w * 0.15, bodyStartY + bodyH * 0.5, w * 0.2, bodyH * 0.15);
+    ctx.rect(startX + w * 0.65, bodyStartY + bodyH * 0.5, w * 0.2, bodyH * 0.15);
+    ctx.fill();
+
+    // +logo GUCCI doppio G (grande e vistoso - oro)
+    ctx.fillStyle = "#FFD700";
+    ctx.rect(startX + w * 0.3, bodyStartY + bodyH * 0.35, w * 0.4, bodyH * 0.18);
+    ctx.fill();
+
+    // +dettagli lettera G (rosso scuro nel logo)
+    ctx.fillStyle = "#990000";
+    ctx.rect(startX + w * 0.35, bodyStartY + bodyH * 0.4, w * 0.08, bodyH * 0.08);
+    ctx.rect(startX + w * 0.57, bodyStartY + bodyH * 0.4, w * 0.08, bodyH * 0.08);
+    ctx.fill();
+
+    // +stripe oro BOTTOM (prominente)
+    ctx.fillStyle = "#FFD700";
+    ctx.rect(startX + w * 0.05, bodyStartY + bodyH * 0.75, w * 0.9, bodyH * 0.1);
+    ctx.fill();
+
+    // +bordo GUCCI finale (stretta linea verde)
+    ctx.fillStyle = "#228B22";
+    ctx.rect(startX, bodyStartY + bodyH * 0.95, w, bodyH * 0.05);
+    ctx.fill();
+    // -body
+
+    // +legs (pantaloni NERI - visibili)
+    const legH = h - headH - bodyH;
+    const legStartY = bodyStartY + bodyH;
+    const legW = w * 0.38;
+
+    ctx.beginPath();
+    ctx.fillStyle = "#1a1a1a";
+    ctx.rect(startX - w * 0.05, legStartY, w * 1.1, legH/3); // cintura
+    ctx.rect(startX, legStartY, legW, legH); // left leg
+    ctx.rect(startX + w - legW, legStartY, legW, legH); // right leg
+    ctx.fill();
+
+    // +scarpe nere (semplici)
+    ctx.fillStyle = "#1a1a1a";
+    ctx.rect(startX, legStartY + legH * 0.85, legW, legH * 0.15);
+    ctx.rect(startX + w - legW, legStartY + legH * 0.85, legW, legH * 0.15);
+    ctx.fill();
+    // -legs
+
+    // +bounding box
+    ctx.beginPath();
+    ctx.rect(startX, startY, w, h);
+    ctx.strokeStyle = "#0099cc";
+    ctx.stroke();
     // -bounding box
 
     ctx.restore();
